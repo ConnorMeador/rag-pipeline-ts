@@ -75,9 +75,9 @@ chars, 150 overlap → 12,092 chunks), `OllamaEmbedder`, `VectorStore` and
 | **Hybrid RRF: BM25 + nomic-embed-text (no task prefix)** | **0.712** | **0.678** | **0.846** | **0.960** |
 | Hybrid RRF: BM25 + nomic-embed-text (task prefixes) | 0.706 | 0.669 | 0.845 | 0.955 |
 | Dense: mxbai-embed-large (no task prefix) | 0.726 | 0.690 | 0.860 | 0.968 |
-| Dense: mxbai-embed-large (task prefix) | 0.730 | 0.692 | 0.872 | 0.975 |
+| Dense: mxbai-embed-large (task prefixes) | 0.730 | 0.692 | 0.872 | 0.975 |
 | Hybrid RRF: BM25 + mxbai-embed-large (no task prefix) | 0.731 | 0.698 | 0.861 | 0.980 |
-| **Hybrid RRF: BM25 + mxbai-embed-large (task prefix)** | **0.737** | **0.705** | **0.864** | **0.977** |
+| **Hybrid RRF: BM25 + mxbai-embed-large (task prefixes)** | **0.737** | **0.705** | **0.864** | **0.977** |
 
 What the numbers say:
 
