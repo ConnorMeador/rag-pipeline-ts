@@ -1,6 +1,8 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
+import { Bm25Index } from './bm25.js';
+
 export interface StoredChunk {
   id: string;
   text: string;
@@ -78,5 +80,23 @@ export class VectorStore {
     }));
     scored.sort((a, b) => b.score - a.score);
     return scored.slice(0, k);
+  }
+
+  private keywordIndex?: Bm25Index;
+  private chunksById?: Map<string, StoredChunk>;
+
+  /**
+   * BM25 keyword search over the same chunks. The index is built lazily on
+   * the first call (chunks are fixed once a store is created or loaded), so
+   * dense-only callers never pay for it. Scores are raw BM25, not cosine.
+   */
+  keywordSearch(query: string, k: number): SearchResult[] {
+    if (k <= 0) return [];
+    if (!this.keywordIndex || !this.chunksById) {
+      this.keywordIndex = new Bm25Index(this.chunks);
+      this.chunksById = new Map(this.chunks.map((c) => [c.id, c]));
+    }
+    const byId = this.chunksById;
+    return this.keywordIndex.search(query, k).map((hit) => ({ chunk: byId.get(hit.id)!, score: hit.score }));
   }
 }

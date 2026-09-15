@@ -9,6 +9,8 @@
  *
  * Env:
  *   OLLAMA_BASE_URL   default http://localhost:11434 (embeddings)
+ *   EMBED_MODEL       default nomic-embed-text
+ *   RETRIEVAL         "dense" (default) or "hybrid" (cosine + BM25, fused with RRF)
  *   RERANK            set to "1" to enable the opt-in reranker
  *   RERANK_BASE_URL   OpenAI-compatible chat/completions base, e.g. an Ollama /v1 endpoint
  *   RERANK_API_KEY    only needed for hosted rerank endpoints
@@ -28,6 +30,7 @@ async function main() {
 
   const embedder = new OllamaEmbedder({
     baseUrl: process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434',
+    model: process.env.EMBED_MODEL ?? 'nomic-embed-text',
   });
 
   console.error(`Ingesting ${dir} ...`);
@@ -38,6 +41,7 @@ async function main() {
   const result = await ask(question, {
     embedder,
     store,
+    retrieval: process.env.RETRIEVAL === 'hybrid' ? 'hybrid' : 'dense',
     rerank: useRerank,
     rerankOptions: useRerank
       ? {

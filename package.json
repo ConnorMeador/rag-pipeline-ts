@@ -10,8 +10,10 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.bench.json",
     "test": "vitest run",
-    "ask": "tsx src/cli.ts"
+    "ask": "tsx src/cli.ts",
+    "bench": "tsx bench/scifact.ts"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",
@@ -20,6 +22,9 @@
     "vitest": "^4.1.11"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": ["esbuild"],
+    "overrides": {
+      "postcss": ">=8.5.23"
+    }
   }
 }
