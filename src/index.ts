@@ -3,6 +3,7 @@ import { readdir, readFile } from 'node:fs/promises';
 
 import { chunkText } from './chunk.js';
 import type { Embedder } from './embed.js';
+import { reciprocalRankFusion } from './hybrid.js';
 import { rerank as rerankCandidates } from './rerank.js';
 import type { RerankOptions } from './rerank.js';
 import { VectorStore } from './store.js';
@@ -16,6 +17,12 @@ export { cosineSimilarity, VectorStore } from './store.js';
 export type { SearchResult, StoredChunk } from './store.js';
 export { rerank } from './rerank.js';
 export type { RerankOptions } from './rerank.js';
+export { Bm25Index, tokenize } from './bm25.js';
+export type { Bm25Doc, Bm25Options, Bm25Result } from './bm25.js';
+export { reciprocalRankFusion } from './hybrid.js';
+export type { FusedResult, RankedId, RrfOptions } from './hybrid.js';
+export { mean, ndcgAtK, recallAtK, reciprocalRankAtK } from './metrics.js';
+export type { Judgments } from './metrics.js';
 
 const TEXT_EXTENSIONS = new Set(['.md', '.mdx', '.txt']);
 
@@ -63,6 +70,12 @@ export interface AskOptions {
   store: VectorStore;
   /** Number of results to return. Default: 5. */
   k?: number;
+  /**
+   * 'dense' = cosine only. 'hybrid' = cosine + BM25 keyword search merged
+   * with reciprocal rank fusion; result scores are then RRF scores, not
+   * cosine. Default: 'dense'. See bench/ for measured numbers on both.
+   */
+  retrieval?: 'dense' | 'hybrid';
   /** Opt-in second-stage LLM rerank (see rerank.ts). Default: false. */
   rerank?: boolean;
   rerankOptions?: RerankOptions;
@@ -86,7 +99,9 @@ export async function ask(question: string, options: AskOptions): Promise<AskRes
   const poolSize = options.candidatePoolSize ?? Math.max(k * 4, 20);
 
   const queryEmbedding = await options.embedder.embed(question);
-  const candidates = options.store.search(queryEmbedding, poolSize);
+  const dense = options.store.search(queryEmbedding, poolSize);
+  const candidates =
+    options.retrieval === 'hybrid' ? fuse(dense, options.store.keywordSearch(question, poolSize), poolSize) : dense;
 
   const results =
     options.rerank && options.rerankOptions
@@ -94,4 +109,13 @@ export async function ask(question: string, options: AskOptions): Promise<AskRes
       : candidates.slice(0, k);
 
   return { query: question, results };
+}
+
+function fuse(dense: SearchResult[], keyword: SearchResult[], limit: number): SearchResult[] {
+  const byId = new Map<string, StoredChunk>();
+  for (const r of [...dense, ...keyword]) byId.set(r.chunk.id, r.chunk);
+  const toRanked = (list: SearchResult[]) => list.map((r) => ({ id: r.chunk.id }));
+  return reciprocalRankFusion([toRanked(dense), toRanked(keyword)])
+    .slice(0, limit)
+    .map((f) => ({ chunk: byId.get(f.id)!, score: f.score }));
 }

@@ -1,0 +1,86 @@
+{
+  "dataset": "BEIR SciFact (test)",
+  "source": "https://huggingface.co/datasets/mteb/scifact/resolve/main",
+  "queries": 300,
+  "documents": 5183,
+  "chunks": 12092,
+  "chunking": "chunkText defaults (maxChars 1200, overlap 150); document score = best chunk",
+  "ranAt": "2026-09-15T05:51:59.015Z",
+  "node": "v24.19.0",
+  "results": [
+    {
+      "method": "BM25",
+      "ndcg10": 0.6476251253098625,
+      "mrr10": 0.6173637566137566,
+      "recall10": 0.7641111111111112,
+      "recall100": 0.8798888888888889
+    },
+    {
+      "method": "Dense: nomic-embed-text (no task prefix)",
+      "ndcg10": 0.6872810137988594,
+      "mrr10": 0.6500185185185187,
+      "recall10": 0.8240555555555555,
+      "recall100": 0.95
+    },
+    {
+      "method": "Hybrid RRF: BM25 + nomic-embed-text (no task prefix)",
+      "ndcg10": 0.7124079141548754,
+      "mrr10": 0.677527777777778,
+      "recall10": 0.8462222222222222,
+      "recall100": 0.96
+    },
+    {
+      "method": "Dense: nomic-embed-text (task prefixes)",
+      "ndcg10": 0.6958435326165412,
+      "mrr10": 0.6573769841269841,
+      "recall10": 0.8390555555555556,
+      "recall100": 0.94
+    },
+    {
+      "method": "Hybrid RRF: BM25 + nomic-embed-text (task prefixes)",
+      "ndcg10": 0.7058612958123729,
+      "mrr10": 0.6690846560846558,
+      "recall10": 0.8452222222222222,
+      "recall100": 0.955
+    },
+    {
+      "method": "Dense: mxbai-embed-large (no task prefix)",
+      "ndcg10": 0.7264050571766802,
+      "mrr10": 0.6904947089947089,
+      "recall10": 0.859888888888889,
+      "recall100": 0.9683333333333334
+    },
+    {
+      "method": "Hybrid RRF: BM25 + mxbai-embed-large (no task prefix)",
+      "ndcg10": 0.7312940098435359,
+      "mrr10": 0.6984814814814813,
+      "recall10": 0.8606111111111111,
+      "recall100": 0.98
+    },
+    {
+      "method": "Dense: mxbai-embed-large (task prefixes)",
+      "ndcg10": 0.7301845607585743,
+      "mrr10": 0.6923386243386241,
+      "recall10": 0.8715555555555556,
+      "recall100": 0.975
+    },
+    {
+      "method": "Hybrid RRF: BM25 + mxbai-embed-large (task prefixes)",
+      "ndcg10": 0.7374048730301463,
+      "mrr10": 0.705297619047619,
+      "recall10": 0.8639444444444444,
+      "recall100": 0.9766666666666667
+    }
+  ],
+  "timings": {
+    "bm25IndexMs": 289,
+    "nomic-embed-text (no task prefix) search ms/query": 19.4,
+    "nomic-embed-text (no task prefix) corpus embed s": 145.5,
+    "nomic-embed-text (task prefixes) search ms/query": 10.22,
+    "nomic-embed-text (task prefixes) corpus embed s": 90.7,
+    "mxbai-embed-large (no task prefix) search ms/query": 14.17,
+    "mxbai-embed-large (no task prefix) corpus embed s": 150.1,
+    "mxbai-embed-large (task prefixes) search ms/query": 13.45,
+    "mxbai-embed-large (task prefixes) corpus embed s": 147.3
+  }
+}
